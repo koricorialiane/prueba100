@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protocolo Titan | Dashboard Tecnico</title>
+  <meta name="description" content="Panel web listo para abrir y publicar del proyecto Protocolo Titan.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --bg-soft: #0d1a2d;
+      --panel: rgba(10, 24, 43, 0.92);
+      --panel-border: rgba(122, 162, 255, 0.18);
+      --text: #e8efff;
+      --muted: #9db2cf;
+      --accent: #7dd3fc;
+      --accent-strong: #38bdf8;
+      --ok: #67e8a3;
+      --shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.22), transparent 30%),
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.10), transparent 25%),
+        linear-gradient(180deg, #050b16 0%, var(--bg) 48%, #081424 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { width: 100%; display: block; border-radius: 18px; }
+    .page { max-width: 1440px; margin: 0 auto; padding: 28px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin-bottom: 24px;
+      backdrop-filter: blur(16px);
+      background: rgba(5, 11, 22, 0.72);
+      border: 1px solid rgba(125, 211, 252, 0.12);
+      border-radius: 18px;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      box-shadow: var(--shadow);
+    }
+    .brand strong { display: block; font-size: 1.02rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .brand span { color: var(--muted); font-size: 0.92rem; }
+    .topbar nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .topbar nav a {
+      color: var(--muted);
+      border: 1px solid rgba(157, 178, 207, 0.18);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      padding: 34px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(11, 25, 45, 0.97), rgba(7, 17, 31, 0.94));
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 18px rgba(103, 232, 163, 0.8);
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2.3rem, 4vw, 4.2rem);
+      line-height: 1.02;
+    }
+    .hero p { margin: 0 0 16px; color: var(--muted); max-width: 70ch; }
+    .hero-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+    .metric-card, .panel, .figure-card, .table-card, .download-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+    .metric-card { padding: 20px; }
+    .metric-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .metric-value { display: block; font-size: clamp(1.55rem, 2vw, 2.2rem); margin-bottom: 8px; }
+    .metric-caption { margin: 0; color: var(--muted); font-size: 0.94rem; }
+    .hero-summary .panel, .section-grid > .panel { padding: 22px; }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 26px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .section-heading { margin-bottom: 16px; }
+    .section-heading.compact { margin-bottom: 14px; }
+    .section-heading h2, .section-heading h3 { margin: 0 0 8px; }
+    .section-heading p { margin: 0; color: var(--muted); }
+    .section-heading h2 { font-size: 1.55rem; }
+    .section-heading h3 { font-size: 1.1rem; }
+    .kpi-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .kpi-chip {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(10, 24, 43, 0.8);
+      border: 1px solid rgba(125, 211, 252, 0.14);
+    }
+    .kpi-chip span { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--muted); margin-bottom: 8px; }
+    .kpi-chip strong { font-size: 1.14rem; }
+    .insight-list { margin: 0; padding-left: 18px; color: var(--text); }
+    .insight-list li + li { margin-top: 10px; }
+    .figure-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .figure-card { padding: 16px; }
+    .table-card { padding: 22px; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid rgba(157, 178, 207, 0.12); text-align: left; vertical-align: top; }
+    th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+    td { color: #d9e6ff; font-size: 0.95rem; }
+    tbody tr:hover { background: rgba(125, 211, 252, 0.05); }
+    .download-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .download-card { padding: 22px; transition: transform 0.18s ease, border-color 0.18s ease; }
+    .download-card:hover { transform: translateY(-3px); border-color: rgba(125, 211, 252, 0.35); }
+    .download-type { display: inline-block; margin-bottom: 12px; padding: 6px 10px; border-radius: 999px; background: rgba(56, 189, 248, 0.16); color: var(--accent); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .download-card strong { display: block; margin-bottom: 8px; font-size: 1.04rem; }
+    .download-card p { margin: 0 0 12px; color: var(--muted); }
+    .download-link { color: var(--ok); font-weight: bold; }
+    .footer-note { color: var(--muted); font-size: 0.92rem; text-align: center; margin-top: 28px; }
+    @media (max-width: 1180px) {
+      .hero { grid-template-columns: 1fr; }
+      .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      .download-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .page { padding: 16px; }
+      .topbar { position: static; flex-direction: column; align-items: flex-start; }
+      .metric-grid, .hero-summary, .kpi-strip, .figure-grid, .download-grid { grid-template-columns: 1fr; }
+      .hero { padding: 24px; }
+      table { min-width: 640px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Protocolo Titan</strong>
+        <span>Analisis cuantitativo de movilidad, espectro y certificacion GSM/EDGE</span>
+      </div>
+      <nav>
+        <a href="#resumen">Resumen</a>
+        <a href="#escenario-a">Escenario A</a>
+        <a href="#escenario-b">Escenario B</a>
+        <a href="#codigo">Codigo</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Analisis tecnico integrado de la red</div>
+        <h1>Evaluacion tecnica de la red GSM/EDGE Protocolo Titan</h1>
+        <p>
+          Esta pagina presenta los resultados calculados para el despliegue y la evaluacion de una red GSM/EDGE tactica en dos
+          escenarios operativos: un corredor ferroviario de alta velocidad y un campamento base con reparto controlado del espectro.
+          El contenido integra movilidad radio, fading, planificacion ARFCN, reutilizacion celular e instrumentacion de medida.
+        </p>
+        <p>
+          Las tablas y graficas que se muestran en esta interfaz proceden de los calculos del proyecto y estan organizadas para facilitar
+          la interpretacion tecnica del comportamiento del canal, la asignacion de recursos radio y la validacion instrumental.
+        </p>
+        <div class="hero-summary">
+          <section class="panel">
+            <div class="section-heading compact">
+              <h3>Objeto del analisis</h3>
+              <p>Lectura rapida de los bloques tecnicos evaluados en la pagina.</p>
+            </div>
+            <ul class="insight-list"><li>Escenario A cuantifica Doppler, tiempo de coherencia, selectividad temporal y severidad de fading en movilidad elevada.</li><li>Escenario B dimensiona el reparto de ARFCNs, la separacion co-canal, la C/I estimada y la capacidad util por celda.</li><li>La parte de instrumentacion resume como cambia el nivel de ruido mostrado al modificar la RBW del analizador.</li></ul>
+          </section>
+          <section class="panel">
+            <div class="section-heading compact">
+              <h3>Informacion mostrada</h3>
+              <p>Elementos disponibles para revisar el estado tecnico del sistema.</p>
+            </div>
+            <ul class="insight-list"><li>Indicadores resumen con las magnitudes principales de movilidad, interferencia y sensibilidad instrumental.</li><li>Graficas temporales y espectrales que permiten inspeccionar el comportamiento del enlace y del reparto radio.</li><li>Tablas detalladas con valores numericos para contrastar resultados, hipotesis y decisiones de diseno.</li></ul>
+          </section>
+        </div>
+      </div>
+      <div class="metric-grid">
+        
+    <article class="metric-card">
+      <span class="metric-label">Frecuencia central</span>
+      <strong class="metric-value">900 MHz</strong>
+      <p class="metric-caption">Banda GSM-900 del reto</p>
+    </article>
+    
+
+    <article class="metric-card">
+      <span class="metric-label">Timeslot GSM</span>
+      <strong class="metric-value">577 us</strong>
+      <p class="metric-caption">Duracion de la rafaga analizada</p>
+    </article>
+    
+
+    <article class="metric-card">
+      <span class="metric-label">Cluster de campamento</span>
+      <strong class="metric-value">N=4</strong>
+      <p class="metric-caption">Patron de reutilizacion del escenario B</p>
+    </article>
+    
+
+    <article class="metric-card">
+      <span class="metric-label">Portadoras por celda</span>
+      <strong class="metric-value">6</strong>
+      <p class="metric-caption">47 circuitos de trafico por celda</p>
+    </article>
+    
+      </div>
+    </section>
+
+    <section class="section-grid" id="resumen">
+      <article class="panel span-12">
+        <div class="section-heading">
+          <h2>Resumen ejecutivo</h2>
+          <p>Valores clave del despliegue base y mensajes que deben sostener la memoria final.</p>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-chip"><span>Doppler a baja velocidad</span><strong>41.7 Hz</strong></div>
+<div class="kpi-chip"><span>Doppler a velocidad extrema</span><strong>208.3 Hz</strong></div>
+<div class="kpi-chip"><span>Mejor suelo de ruido</span><strong>-140.3 dBm</strong></div>
+<div class="kpi-chip"><span>BCCH dedicadas</span><strong>C/I 11.6 dB</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section-grid" id="escenario-a">
+      <article class="panel span-4">
+        <div class="section-heading">
+          <h2>Escenario A · Convoy de alta velocidad</h2>
+          <p>Analisis de Doppler, tiempo de coherencia y comportamiento del canal durante el timeslot GSM.</p>
+        </div>
+        <ul class="insight-list"><li>A 50 km/h el Doppler queda en 41.7 Hz y el tiempo de coherencia en 10.15 ms.</li><li>A 250 km/h el canal sigue superando el timeslot GSM con una relacion Tc/Tslot de 3.52.</li><li>El peor caso presenta LCR de 200 cruces/s y AFD media de 0.503 ms.</li><li>El ancho de coherencia estimado ronda 111.1 kHz, util para justificar si el canal se comporta casi plano o ya entra en transicion selectiva.</li></ul>
+      </article>
+      <article class="panel span-8">
+        <div class="section-heading">
+          <h2>Galeria de graficas de movilidad</h2>
+          <p>Curvas y trazas que sostienen la interpretacion radio del escenario ferroviario.</p>
+        </div>
+        <div class="figure-grid">
+          
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Curva de Doppler</h3>
+        <p>Relacion directa entre velocidad y desplazamiento Doppler en GSM-900.</p>
+      </div>
+      <img src="assets/figures/escenario_a_doppler.png" alt="Curva de Doppler" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Coherencia frente a timeslot</h3>
+        <p>Comparativa entre tiempo de coherencia del canal y la ventana util de transmision.</p>
+      </div>
+      <img src="assets/figures/escenario_a_coherencia_vs_timeslot.png" alt="Coherencia frente a timeslot" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Fading Rayleigh a 250 km/h</h3>
+        <p>Caso sin componente dominante de linea de vista en la velocidad mas exigente.</p>
+      </div>
+      <img src="assets/figures/traza_rayleigh_250_kmh.png" alt="Fading Rayleigh a 250 km/h" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Fading Rician a 250 km/h</h3>
+        <p>Caso con componente LOS dominante para comparar estabilidad de la envolvente.</p>
+      </div>
+      <img src="assets/figures/traza_rician_250_kmh.png" alt="Fading Rician a 250 km/h" loading="lazy">
+    </article>
+    
+        </div>
+      </article>
+      <div class="span-6">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Tabla de movilidad</h3>
+        <p>Comparativa de velocidades, Doppler y estabilidad del canal.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Velocidad (km/h)</th><th>Velocidad (m/s)</th><th>Doppler maximo (Hz)</th><th>Espectro Doppler (Hz)</th><th>Tiempo de coherencia (ms)</th><th>Ancho de coherencia (kHz)</th><th>Timeslot GSM (ms)</th><th>Relacion Tc/Tslot</th><th>Doppler normalizado</th><th>Selectividad estimada</th><th>Lectura ingenieril</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>50</td><td>13.889</td><td>41.667</td><td>83.333</td><td>10.152</td><td>111.111</td><td>0.577</td><td>17.594</td><td>0.024</td><td>transicion plano selectivo</td><td>cuasiestatico</td></tr><tr><td>250</td><td>69.444</td><td>208.333</td><td>416.667</td><td>2.03</td><td>111.111</td><td>0.577</td><td>3.519</td><td>0.12</td><td>transicion plano selectivo</td><td>estable con margen reducido</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+      <div class="span-6">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Tabla de fading</h3>
+        <p>Metricas de variacion de envolvente para Rayleigh y Rician.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Velocidad (km/h)</th><th>Modelo de fading</th><th>Envolvente minima</th><th>Envolvente maxima</th><th>Desviacion estandar</th><th>Pico a pico relativo</th><th>LCR a -10 dB (1/s)</th><th>AFD media (ms)</th><th>Outage (%)</th><th>Lectura ingenieril</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>50</td><td>rayleigh</td><td>0.075</td><td>1.993</td><td>0.575</td><td>1.918</td><td>25</td><td>1.758</td><td>8.789</td><td>cuasiestatico</td></tr><tr><td>50</td><td>rician</td><td>0.196</td><td>1.753</td><td>0.388</td><td>1.557</td><td>25</td><td>2.005</td><td>5.013</td><td>cuasiestatico</td></tr><tr><td>250</td><td>rayleigh</td><td>0.03</td><td>2.721</td><td>0.557</td><td>2.691</td><td>200</td><td>0.503</td><td>10.059</td><td>estable con margen reducido</td></tr><tr><td>250</td><td>rician</td><td>0.211</td><td>1.851</td><td>0.419</td><td>1.64</td><td>125</td><td>0.24</td><td>3.003</td><td>estable con margen reducido</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+    </section>
+
+    <section class="section-grid" id="escenario-b">
+      <article class="panel span-4">
+        <div class="section-heading">
+          <h2>Escenario B · Campamento base</h2>
+          <p>Planificacion de ARFCNs, BCCH/TCH, reutilizacion celular y criterio de certificacion.</p>
+        </div>
+        <ul class="insight-list"><li>Cada celda recibe 6 portadoras y la distancia de reutilizacion alcanza 5.2 km.</li><li>La relacion D/R vale 3.46 y la C/I estimada se situa en 11.64 dB.</li><li>Pasar de 100 kHz a 1 kHz reduce el ruido integrado mostrado en 20 dB, pero ralentiza el barrido instrumental.</li></ul>
+      </article>
+      <article class="panel span-8">
+        <div class="section-heading">
+          <h2>Galeria de graficas espectrales</h2>
+          <p>Visualizaciones para defender la asignacion de canales y el ajuste del analizador.</p>
+        </div>
+        <div class="figure-grid">
+          
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Topologia del cluster N=4</h3>
+        <p>Mapa del patron celular y de las celdas reutilizadas en el campamento.</p>
+      </div>
+      <img src="assets/figures/escenario_b_cluster_map.png" alt="Topologia del cluster N=4" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Reparto BCCH y TCH</h3>
+        <p>Distribucion de portadoras de control y trafico por celda.</p>
+      </div>
+      <img src="assets/figures/escenario_b_distribucion_portadoras.png" alt="Reparto BCCH y TCH" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Distancia de proteccion co-canal</h3>
+        <p>Lectura rapida de la distancia D exigida por la reutilizacion celular.</p>
+      </div>
+      <img src="assets/figures/escenario_b_reutilizacion.png" alt="Distancia de proteccion co-canal" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>Huella espectral del despliegue</h3>
+        <p>Visualizacion del reparto de ARFCNs y del entorno co-canal en GSM-900.</p>
+      </div>
+      <img src="assets/figures/escenario_b_spectrum.png" alt="Huella espectral del despliegue" loading="lazy">
+    </article>
+    
+
+    <article class="figure-card">
+      <div class="section-heading compact">
+        <h3>RBW frente a ruido integrado</h3>
+        <p>El estrechamiento de la RBW mejora la visibilidad de senales debiles pero alarga la medida.</p>
+      </div>
+      <img src="assets/figures/certificacion_rbw_ruido.png" alt="RBW frente a ruido integrado" loading="lazy">
+    </article>
+    
+        </div>
+      </article>
+      <div class="span-6">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Planificacion celular</h3>
+        <p>Reparto por celda del cluster N=4 y distancia de proteccion.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Celda</th><th>Portadoras/celda</th><th>Rango ARFCN</th><th>Relacion D/R</th><th>Distancia de reutilizacion (km)</th><th>C/I estimada (dB)</th><th>Margen sobre objetivo (dB)</th><th>Circuitos de voz/celda</th><th>Bitrate util estimado (kbps)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>6</td><td>1-6</td><td>3.464</td><td>5.196</td><td>11.644</td><td>2.644</td><td>47</td><td>611</td></tr><tr><td>B</td><td>6</td><td>7-12</td><td>3.464</td><td>5.196</td><td>11.644</td><td>2.644</td><td>47</td><td>611</td></tr><tr><td>C</td><td>6</td><td>13-18</td><td>3.464</td><td>5.196</td><td>11.644</td><td>2.644</td><td>47</td><td>611</td></tr><tr><td>D</td><td>6</td><td>19-24</td><td>3.464</td><td>5.196</td><td>11.644</td><td>2.644</td><td>47</td><td>611</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+      <div class="span-6">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Tabla RBW y ruido</h3>
+        <p>Base numerica para explicar el compromiso entre ruido integrado y tiempo de barrido.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>RBW (kHz)</th><th>Ruido integrado (dBm)</th><th>DANL mostrado (dBm)</th><th>Delta vs 100 kHz (dB)</th><th>Barrido estimado (ms)</th><th>Margen para señal debil (dB)</th><th>Interpretacion de medida</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>100</td><td>-118</td><td>-120.298</td><td>0</td><td>1.25</td><td>0.298</td><td>RBW ancho: barrido rápido, menor sensibilidad de señales débiles.</td></tr><tr><td>10</td><td>-128</td><td>-130.298</td><td>-10</td><td>125</td><td>10.298</td><td>RBW estrecho: mejor visibilidad de señales débiles, barrido más lento.</td></tr><tr><td>1</td><td>-138</td><td>-140.298</td><td>-20</td><td>12500</td><td>20.298</td><td>RBW estrecho: mejor visibilidad de señales débiles, barrido más lento.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+      <div class="span-7">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Canales logicos y fisicos</h3>
+        <p>Asignacion de roles BCCH/TCH y politicas de hopping o potencia por portadora.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Celda</th><th>ARFCN</th><th>Uplink (MHz)</th><th>Downlink (MHz)</th><th>Rol de la portadora</th><th>Hopping recomendado</th><th>TS utiles</th><th>Politica de potencia</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>1</td><td>890.2</td><td>935.2</td><td>BCCH/CCCH control</td><td>No</td><td>7</td><td>fixed/stable</td></tr><tr><td>A</td><td>2</td><td>890.4</td><td>935.4</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>A</td><td>3</td><td>890.6</td><td>935.6</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>A</td><td>4</td><td>890.8</td><td>935.8</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>A</td><td>5</td><td>891</td><td>936</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>A</td><td>6</td><td>891.2</td><td>936.2</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>B</td><td>7</td><td>891.4</td><td>936.4</td><td>BCCH/CCCH control</td><td>No</td><td>7</td><td>fixed/stable</td></tr><tr><td>B</td><td>8</td><td>891.6</td><td>936.6</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>B</td><td>9</td><td>891.8</td><td>936.8</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>B</td><td>10</td><td>892</td><td>937</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>B</td><td>11</td><td>892.2</td><td>937.2</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>B</td><td>12</td><td>892.4</td><td>937.4</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>C</td><td>13</td><td>892.6</td><td>937.6</td><td>BCCH/CCCH control</td><td>No</td><td>7</td><td>fixed/stable</td></tr><tr><td>C</td><td>14</td><td>892.8</td><td>937.8</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>C</td><td>15</td><td>893</td><td>938</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>C</td><td>16</td><td>893.2</td><td>938.2</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>C</td><td>17</td><td>893.4</td><td>938.4</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>C</td><td>18</td><td>893.6</td><td>938.6</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>D</td><td>19</td><td>893.8</td><td>938.8</td><td>BCCH/CCCH control</td><td>No</td><td>7</td><td>fixed/stable</td></tr><tr><td>D</td><td>20</td><td>894</td><td>939</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>D</td><td>21</td><td>894.2</td><td>939.2</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>D</td><td>22</td><td>894.4</td><td>939.4</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>D</td><td>23</td><td>894.6</td><td>939.6</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr><tr><td>D</td><td>24</td><td>894.8</td><td>939.8</td><td>TCH traffic</td><td>Si</td><td>8</td><td>adaptive if supported</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+      <div class="span-5">
+        
+    <article class="table-card">
+      <div class="section-heading">
+        <h3>Checklist RED</h3>
+        <p>Puntos que conviene dejar expresos en la memoria tecnica final.</p>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Area de control</th><th>Evidencia</th><th>Argumento que debe aparecer en la memoria</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Uso eficiente del espectro</td><td>planificación ARFCN, clúster N=4, distancia de reutilización y control de co-canal</td><td>Justificar que la asignación espectral reduce interferencias y evita solapamientos.</td></tr><tr><td>Emisiones no deseadas</td><td>medida con analizador de espectro y ajuste de RBW</td><td>Explicar cómo se distinguirían señales débiles de ruido instrumental.</td></tr><tr><td>Estabilidad de canal</td><td>Doppler, tiempo de coherencia y comparación con timeslot GSM</td><td>Defender si el enlace es viable durante la ráfaga en movilidad.</td></tr><tr><td>Documentación técnica</td><td>tablas, gráficas, hipótesis y trazabilidad de cálculos</td><td>Incluir ecuaciones, unidades y discusión ingenieril.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+    
+      </div>
+    </section>
+
+    <section class="section-grid" id="codigo">
+      <article class="panel span-12">
+        <div class="section-heading">
+          <h2>Codigo del repositorio</h2>
+          <p>Paquete limpio con la pagina HTML y el codigo Python necesario para recalcularla.</p>
+        </div>
+        <ul class="insight-list">
+          <li>Abre <code>index.html</code> o <code>docs/index.html</code> para ver la web.</li>
+          <li>El codigo fuente esta en <code>src/protocolo_titan/</code>.</li>
+          <li>Las dependencias minimas estan en <code>requirements.txt</code>.</li>
+          <li>Si quieres recalcular la web, ejecuta <code>python -m protocolo_titan.main</code> con <code>PYTHONPATH=src</code>.</li>
+          <li>La carpeta <code>tests/</code> contiene pruebas para validar los calculos.</li>
+        </ul>
+      </article>
+    </section>
+
+    <p class="footer-note">
+      Build generado el 22/05/2026 18:54. Para publicarlo en GitHub Pages basta con subir el proyecto y usar la carpeta <code>docs/</code> como origen.
+    </p>
+  </div>
+</body>
+</html>
